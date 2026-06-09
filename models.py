@@ -21,8 +21,10 @@ class Choice(models.Model):
         return self.choice_text
 
 class Submission(models.Model):
-    # Lưu lịch sử nộp bài của user
-    # enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE) 
-    # Tùy thuộc vào schema của bạn, có thể liên kết với user/course
-    score = models.IntegerField(default=0)
-    passed = models.BooleanField(default=False)
+    # Thêm 2 field bị thiếu này vào
+    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
+    choices = models.ManyToManyField(Choice)
+    
+    # Giữ nguyên các field cũ của bạn (ví dụ: score, passed) nếu có
+    # score = models.IntegerField(default=0)
+    # passed = models.BooleanField(default=False)
