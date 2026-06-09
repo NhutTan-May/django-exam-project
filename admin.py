@@ -1,26 +1,35 @@
-from django.db import models
-from django.conf import settings
+from django.contrib import admin
+# Đã import đủ 7 class theo yêu cầu
+from .models import Course, Lesson, Question, Choice, Submission, Instructor, Learner
 
-# Các model có sẵn (Course, Lesson, Enrollment,...) giữ nguyên của bạn
-# Dưới đây là phần code bổ sung chuẩn cho Bài kiểm tra:
+class ChoiceInline(admin.TabularInline):
+    model = Choice
+    extra = 3
 
-class Question(models.Model):
-    lesson = models.ForeignKey('Lesson', on_delete=models.CASCADE)
-    question_text = models.CharField(max_length=200)
-    grade = models.IntegerField(default=1)
+class QuestionInline(admin.StackedInline):
+    model = Question
+    extra = 1
 
-    def __str__(self):
-        return self.question_text
+class QuestionAdmin(admin.ModelAdmin):
+    inlines = [ChoiceInline]
+    list_display = ['question_text', 'lesson', 'grade']
 
-class Choice(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    choice_text = models.CharField(max_length=200)
-    is_correct = models.BooleanField(default=False)
+class LessonInline(admin.StackedInline):
+    model = Lesson
+    extra = 1
 
-    def __str__(self):
-        return self.choice_text
+class LessonAdmin(admin.ModelAdmin):
+    inlines = [QuestionInline]
 
-class Submission(models.Model):
-    # Đã thêm đầy đủ enrollment và choices theo yêu cầu của hệ thống chấm điểm
-    enrollment = models.ForeignKey('Enrollment', on_delete=models.CASCADE)
-    choices = models.ManyToManyField(Choice)
+class CourseAdmin(admin.ModelAdmin):
+    inlines = [LessonInline]
+    list_display = ('name', 'pub_date')
+
+# Register toàn bộ 7 class
+admin.site.register(Course, CourseAdmin)
+admin.site.register(Lesson, LessonAdmin)
+admin.site.register(Question, QuestionAdmin)
+admin.site.register(Choice)
+admin.site.register(Submission)
+admin.site.register(Instructor)
+admin.site.register(Learner)
