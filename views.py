@@ -27,20 +27,20 @@ def show_exam_result(request, course_id, submission_id):
     course = get_object_or_404(Course, pk=course_id)
     submission = get_object_or_404(Submission, pk=submission_id)
     
-    # Tính điểm
-    total_score = 0
-    possible_score = 0
+    # Tạo list các ID mà user đã chọn
+    selected_ids = submission.choices.values_list('id', flat=True)
     
+    # Tính điểm (grade)
+    grade = 0
     for choice in submission.choices.all():
-        possible_score += choice.question.grade
         if choice.is_correct:
-            total_score += choice.question.grade
+            grade += choice.question.grade
             
     context = {
         'course': course,
         'submission': submission,
-        'total_score': total_score,
-        'possible_score': possible_score
+        'selected_ids': selected_ids, # Bắt buộc phải có biến này
+        'grade': grade,               # Bắt buộc phải có biến này
     }
-    
+    return render(request, 'exam_result.html', context)
     return render(request, 'exam_result.html', context)
